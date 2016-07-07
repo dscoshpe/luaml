@@ -1,8 +1,7 @@
 package = "luaml"
 version = "scm-1"
 source = {
-    url = "git://github.com/dscoshpe/luaml",
-    tag = "HEAD",
+    url = "git://github.com/dscoshpe/luaml.git"
 }
 description = {
     summary = "A powerful markup language based on a subset of Lua.",

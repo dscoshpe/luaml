@@ -2,9 +2,17 @@
 	A powerful markup language based on a subset of Lua.
 --]]
 
+local string = require("string")
+local table = require("table")
+local io = require("io")
+
 local LuaML = {
 	debug = true
 }
+
+local function printDebug(str)
+	if LuaML.debug then print(str) end
+end
 
 -- just a placeholder
 local function loadLuaML()
@@ -74,11 +82,6 @@ local function exportLuaML(tbl, lvl)
 	return string.format("{\n%s\n%s}", table.concat(out, ",\n"), string.rep("\t", lvl - 2))
 end
 
-
-local function printDebug(str)
-	if LuaML.debug then print(str) end
-end
-
 --[[
 Lua 5.2 and LuaJIT support code loading via the 'load()' function which is
 safer than the 'loadstring()' function in Lua 5.1. Since the '_VERSION'
@@ -110,8 +113,15 @@ end
 
 -- string -> table
 function LuaML.decode(str)
-	str = str:gsub("^#![^\n]*\n", "")
+	str = string.gsub(str, "^#![^\n]*\n", "")
 	return loadLuaML(str)
+end
+
+function LuaML.decodeFile(file)
+	local fd = io.open(file, "r")
+	local str = fd:read("*a")
+	fd:close()
+	return LuaML.decode(str)
 end
 
 return LuaML
