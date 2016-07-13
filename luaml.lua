@@ -23,10 +23,14 @@ local function loadSafe(str)
 	local result = {}
 	local chunk, err = load(str, nil, "t", result)
 	if chunk ~= nil then
-		local ran, err = pcall(chunk)
+		local ran, errc = pcall(chunk)
 		if ran then
 			return result
+		else
+			printDebug(string.format("Error evaluating the given chunk: ", errc))
 		end
+	else
+		printDebug(string.format("Error evaluating the given string: ", err))
 	end
 	return nil
 end
@@ -37,10 +41,14 @@ local function load51(str)
 	local chunk, err = loadstring(str)
 	if chunk ~= nil then
 		setfenv(chunk, result)
-		local ran, err = pcall(chunk)
+		local ran, errc = pcall(chunk)
 		if ran then
 			return result
+		else
+			printDebug(string.format("Error evaluating the given chunk: ", errc))
 		end
+	else
+		printDebug(string.format("Error evaluating the given string: ", err))
 	end
 	return nil
 end
@@ -54,8 +62,8 @@ local function exportLuaML(tbl, lvl)
 	for k,v in pairs(tbl) do
 
 		-- format the key
-		local t = type(k)
 		if lvl > 1 then
+			local t = type(k)
 			if t == "number" then
 				k = string.format("[%d]", k)
 			elseif t == "string" then
@@ -94,13 +102,12 @@ local function testLoadMethod()
 		loadLuaML = load51
 		loadSafe = nil
 		return "load"
-	else
-		printDebug("Setting safe string loading mode.")
-		loadLuaML = loadSafe
-		load51 = nil
-		return "loadstring"
 	end
-	return false
+
+	printDebug("Setting safe string loading mode.")
+	loadLuaML = loadSafe
+	load51 = nil
+	return "loadstring"
 end
 
 -- a convenient reference to the decode mode currently in use
